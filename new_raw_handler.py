@@ -106,8 +106,10 @@ outdf.to_csv(datefn,index=False)
 
 if do_tripwire:
     detect_changes.runTripWire(currfn+'.zip',lastfn+'.zip')
-
-print(f'\nNumber of added events: {len(gb)}\n\n')
+    
+    
+print(f'\nNumber of events just added: {len(gb)}\n\n')
+print(f'\nnumber since last report ({datefn.weekly_report.max()}): {datefn.weekly_report.isna().sum()}')
 
 # if upload_report:
 #     s= 'jupyter nbconvert --template=hide_input --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=-1 --execute daily_report.ipynb --to=html '
