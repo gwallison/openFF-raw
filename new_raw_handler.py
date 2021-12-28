@@ -40,7 +40,7 @@ import detect_changes
 force_archive = False # use sparingly, only when not doing routine checks.
 do_download = True # if False, will run routines without downloading first,
                    # and will depend on existing test_data.zip files.
-do_tripwire = True 
+do_tripwire = True
 # upload_report = True # replaces last report on the web with the today's
 
 
@@ -82,7 +82,6 @@ if do_download:
 
 ## Now process file
 print('Working on data set')
-#outdf = pd.read_csv(datefn,quotechar='$')
 outdf = pd.read_csv(datefn)
 uklst = outdf.UploadKey.unique()
 
@@ -101,22 +100,16 @@ gb.rename({'bgCAS':'num_records'}, inplace=True,axis=1)
 
 outdf = pd.concat([outdf,gb],sort=True)
 outdf.to_csv(datefn,index=False)
-#t.pickleAll() # pickle so notebook has access to data.
 
 
 if do_tripwire:
     detect_changes.runTripWire(currfn+'.zip',lastfn+'.zip')
     
-    
-print(f'\nNumber of events just added: {len(gb)}\n\n')
-print(f'\nnumber since last report ({datefn.weekly_report.max()}): {datefn.weekly_report.isna().sum()}')
+last_report = outdf[outdf.weekly_report.notna()].weekly_report.max()
+not_reported = outdf.weekly_report.isna().sum()
+print(f'\nNumber of events just added: {len(gb)}')
+print(f'  -- number since last report ({last_report}): {not_reported}\n\n')
 
-# if upload_report:
-#     s= 'jupyter nbconvert --template=hide_input --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=-1 --execute daily_report.ipynb --to=html '
-#     print(subprocess.run(s))
-#     shutil.copyfile('daily_report.html',
-# #                    'c:/Users/Gary/Google Drive/webshare/daily_report.html')
-#                     'g:/My Drive/webshare/daily_report.html')
 
 endit = datetime.now()
 print(f'\nWhole process completed in {endit-st}')
