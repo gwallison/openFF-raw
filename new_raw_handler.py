@@ -107,6 +107,11 @@ if do_tripwire:
     
 last_report = outdf[outdf.weekly_report.notna()].weekly_report.max()
 not_reported = outdf.weekly_report.isna().sum()
+
+if len(gb)>0:
+    from make_temp_repo import build_test_repo
+    build_test_repo()
+    
 print(f'\nNumber of events just added: {len(gb)}')
 print(f'  -- number since last report ({last_report}): {not_reported}\n\n')
 
