@@ -83,7 +83,7 @@ def process_file():
     
     t = bds.run_build(bulk_fn=currfn,mode='PRODUCTION',make_output_files=False,
                       startfile=0,endfile=None,do_abbrev=False,
-                      construct_from_scratch=True,inc_skyTruth=True,
+                      construct_from_scratch=True,#inc_skyTruth=True,
                       do_end_tests=False)
     df = t.tables['chemrecs']
     
@@ -119,21 +119,25 @@ if do_download:
     print(f'Downloading data from {url}')
     r = requests.get(url, allow_redirects=True,timeout=20.0)
     open(tempfilefn, 'wb').write(r.content)
+    
     nochange = files_are_same()
-
+    
     if not nochange:
         if do_tripwire:
             detect_changes.backup_testData(infn=currfn+'.zip',
                                   outfn=lastfn+'.zip',
                                   sources=sources)
-
+    
         open(sources+currfn+'.zip', 'wb').write(r.content)  # overwrites currfn file.
     if archive_file: open(afile, 'wb').write(r.content)
-
+    
     if not nochange:
         process_file()
     else:
         print('\nNo changes detected between current and last download based on signature')
+else:
+    process_file()
+    
 endit = datetime.now()
 print(f'\nWhole process completed in {endit-st}')
 
