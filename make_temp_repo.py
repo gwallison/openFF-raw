@@ -8,7 +8,8 @@ Used to create a repo-like set of data and that has not been completely
 curated.  
 Provided in the repo are: 
     - data table pickles (for recreating analysis sets)
-    - copies of the translation tables used to created the database
+    - copies of the translation tables used to created the database (just bulk)
+    
 """
 
 
@@ -69,19 +70,38 @@ def build_test_repo():
                 print(f'copied {fn}')
             
     # copy curation files
-    files = ['carrier_list_auto.csv','carrier_list_curated.csv',
-             'carrier_list_prob.csv','CAS_curated.csv',
+    cfiles = ['carrier_list_auto.csv',
+              'carrier_list_curated.csv',
+              'carrier_list_prob.csv']
+    files = ['CAS_curated.csv',
              'casing_curated.csv','company_xlate.csv','ST_api_without_pdf.csv',
-             'ING_curated.csv','CAS_synonyms.csv','CAS_ref_and_names.csv',
+             'ING_curated.csv','CAS_synonyms.csv',
+             'CAS_synonyms_CompTox.csv','CAS_ref_and_names.csv',
              'tripwire_summary.csv','upload_dates.csv']
+    # files = ['bulk/carrier_list_auto.csv','bulk/carrier_list_curated.csv',
+    #          'bulk/carrier_list_prob.csv','CAS_curated.csv',
+    #          'casing_curated.csv','company_xlate.csv','ST_api_without_pdf.csv',
+    #          'ING_curated.csv','CAS_synonyms.csv','CAS_ref_and_names.csv',
+    #          'tripwire_summary.csv','upload_dates.csv']
     
     cdir = 'curation_files/'
+    try:
+        # sometimes this dir is a leftover from a non-completed run
+        shutil.rmtree(cdir)         
+    except:
+        pass
     os.mkdir(cdir) # made in the cwd.
+    
     with zipfile.ZipFile(repo_dir+'/curation_files.zip','w') as z:
         for fn in files:
             print(f'  - zipping {fn}')
             shutil.copy(trans_dir+fn,cdir)
+            z.write(cdir+fn,compress_type=zipfile.ZIP_DEFLATED)
+        for fn in cfiles:
+            print(f'  - zipping {fn}')
+            shutil.copy(trans_dir+f'bulk/{fn}',cdir)
             z.write(cdir+fn,compress_type=zipfile.ZIP_DEFLATED)    
+
     shutil.rmtree(cdir)         
     
     

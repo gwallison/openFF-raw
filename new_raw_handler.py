@@ -25,7 +25,8 @@ Dec 2021:  The 2019-2020 version is copied to the new directory structure and
 import sys
 sys.path.insert(0,'c:/MyDocs/OpenFF/src/openFF-build')
 import build_data_set as bds
-import builder_tasks.Location_cleanup as loc_clean
+
+#import builder_tasks.Location_cleanup as loc_clean
 
 ###################################################################################
 
@@ -41,8 +42,8 @@ import detect_changes
 
 
 force_archive = False # use sparingly, only when not doing routine checks.
-do_download = True # if False, will run routines without downloading first,
-                   # and will depend on existing test_data.zip files.
+do_download =  True   # if False, will run routines without downloading first,
+                      # and will depend on existing test_data.zip files.
 do_tripwire = True
 
 
@@ -83,12 +84,13 @@ def process_file():
     
     t = bds.run_build(bulk_fn=currfn,mode='PRODUCTION',make_output_files=False,
                       startfile=0,endfile=None,do_abbrev=False,
+                      data_source = 'bulk',  # ONLY run this with bulk data
                       construct_from_scratch=True,#inc_skyTruth=True,
                       do_end_tests=False)
     df = t.tables['chemrecs']
     
     
-    loc_clean.clean_location(t.tables['disclosures'])
+    #loc_clean.clean_location(t.tables['disclosures'])
     
     
     ndf = df[~df.UploadKey.isin(uklst)].copy() # just the new ones
