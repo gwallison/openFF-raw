@@ -34,7 +34,9 @@ import build_data_set as bds
 #import core.trip_wire as twire
 import pandas as pd
 import requests
+import os
 from hashlib import sha256
+
 #import subprocess
 #import shutil
 from datetime import datetime
@@ -75,6 +77,11 @@ def files_are_same():
     with open(sources+currfn+'.zip','rb') as f:
         lastsig = sha256(f.read()).hexdigest()
     return newsig==lastsig
+
+def new_file_is_smaller():
+    newsize = os.path.getsize(tempfilefn)
+    lastsize = os.path.getsize(sources+currfn+'.zip')
+    return newsize<lastsize
 
 def process_file():
     ## Now process file
@@ -122,8 +129,14 @@ if do_download:
     r = requests.get(url, allow_redirects=True,timeout=20.0)
     open(tempfilefn, 'wb').write(r.content)
     
-    nochange = files_are_same()
-    
+    if new_file_is_smaller(): # something is wrong with the downloaded file
+        print('*************************************************************')
+        print(' New downloaded file is smaller that last, not continuing...')
+        print('*************************************************************')
+        exit()
+        
+        
+    nochange = files_are_same()   
     if not nochange:
         if do_tripwire:
             detect_changes.backup_testData(infn=currfn+'.zip',
